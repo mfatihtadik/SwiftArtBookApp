@@ -76,6 +76,7 @@ class DetailsVC: UIViewController, UIImagePickerControllerDelegate, UINavigation
         newPainting.setValue(artistText.text, forKey: "artist")
         
         if let year = Int(yearText.text!) {
+
             newPainting.setValue(year, forKey: "year")
         }
         
@@ -96,6 +97,14 @@ class DetailsVC: UIViewController, UIImagePickerControllerDelegate, UINavigation
         }
         
         
+        // Save butonuna basıldığında ->
+        
+        // Bütün App düzeyinde bir mesaj gönderecek "newData" adında.
+        // İstediğimiz VC' de bu mesaj gelirse ne yapayım? fonksiyonu oluşturabiliriz.
+        // Yani VC' de "newData" gelirse getData() fonksiyonunu çalıştır diyeceğiz...
+        
+        NotificationCenter.default.post(name: NSNotification.Name("newData"), object: nil)
+        self.navigationController?.popViewController(animated: true)
         
         
         
