@@ -15,7 +15,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var nameArray = [String]()
     var idArray = [UUID]()
     
-    var firstGetdata = true
+    var selectedPainting = ""
+    var selectedPaintingID : UUID?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,7 +42,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     @objc func getData() {
         
-        nameArray.removeAll(keepingCapacity: false)
+        nameArray.removeAll(keepingCapacity: false) //keepingCapacity --> default olarak zaten false geliyor, hatırlatma için yazıldı...
         idArray.removeAll(keepingCapacity: false )
         
         
@@ -56,21 +57,21 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         do {
             let results = try context.fetch(fetchRequest)
             
-            for result in results as! [NSManagedObject] {
+            if results.count > 0 {
                 
-                if let name = result.value(forKey: "name") as? String {
-                    self.nameArray.append(name)
+                for result in results as! [NSManagedObject] {
+                    
+                    if let name = result.value(forKey: "name") as? String {
+                        self.nameArray.append(name)
+                    }
+                    
+                    if let id = result.value(forKey: "id") as? UUID {
+                        self.idArray.append(id)
+                    }
+                    
+                    self.myTableview.reloadData()
                 }
-                
-                if let id = result.value(forKey: "id") as? UUID {
-                    self.idArray.append(id)
-                }
-                
-                myTableview.reloadData()
-                
-                
             }
-            
             
         } catch {
             print("Error")
@@ -78,11 +79,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     
-    
     @objc func addNewItem() {
-        
+        selectedPainting = "" // Eğer selectedPainting boş olursa, tableview'dan birşeye tıklanmadı demek... Yani + butonundan geldi ve normal işlemler geçerli...
         performSegue(withIdentifier: "toDetailsVC", sender: nil)
-        
     }
     
     
@@ -95,6 +94,34 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         content.text = nameArray[indexPath.row]
         cell.contentConfiguration = content
         return cell
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "toDetailsVC" {
+            
+            let destinationVc = segue.destination as! DetailsVC
+            
+            destinationVc.choosenPainting = selectedPainting
+            destinationVc.choosenPaintingId = selectedPaintingID
+            
+            /*
+            if let destinationVC = segue.destination as? DetailsVC {
+                
+                destinationVC.choosenPainting = selectedPainting
+                destinationVC.choosenPaintingId = selectedPaintingID
+                
+            }
+            */
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        selectedPainting = nameArray[indexPath.row] // SelectedPainting dolu gideceği için DetailsVC' de yeni fonksiyon çalışacak...
+        selectedPaintingID = idArray[indexPath.row]
+        
+        performSegue(withIdentifier: "toDetailsVC", sender: nil)
+        
     }
 
 

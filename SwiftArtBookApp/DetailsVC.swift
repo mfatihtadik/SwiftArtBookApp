@@ -16,12 +16,20 @@ class DetailsVC: UIViewController, UIImagePickerControllerDelegate, UINavigation
     @IBOutlet weak var artistText: UITextField!
     @IBOutlet weak var yearText: UITextField!
     
+    var choosenPainting = ""
+    var choosenPaintingId : UUID?
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         
-        
+        if choosenPainting != "" {
+            // Core Data
+            
+            getDetailData()
+        }
+  
         //-------Recognizer-------
         
         let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
@@ -54,7 +62,6 @@ class DetailsVC: UIViewController, UIImagePickerControllerDelegate, UINavigation
         myImageview.image = info[.originalImage] as? UIImage
         self.dismiss(animated: true, completion: nil)
     }
-    
     
     
     @objc func hideKeyboard() {
@@ -107,7 +114,48 @@ class DetailsVC: UIViewController, UIImagePickerControllerDelegate, UINavigation
         self.navigationController?.popViewController(animated: true)
         
         
+    }
+    
+    func getDetailData() {
         
+        //UUID' yi stringe dönüştürmek istersek ->>
+        //let stringUUID = choosenPaintingId!.uuidString
+
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let context = appDelegate.persistentContainer.viewContext
+        
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Painting")
+        let idString = choosenPaintingId?.uuidString
+        
+        fetchRequest.predicate = NSPredicate(format: "id == %@", idString!)
+        fetchRequest.returnsObjectsAsFaults = false
+        
+        do {
+            let results = try context.fetch(fetchRequest)
+            
+            if results.count > 0 {
+                
+                for result in results as! [NSManagedObject] {
+                    
+                    if let name = result.value(forKey: "name") as? String {
+                        nameText.text = name
+                    }
+                    if let artist = result.value(forKey: "artist") as? String {
+                        artistText.text = artist
+                    }
+                    if let year = result.value(forKey: "year") as? Int {
+                        yearText.text = String(year)
+                    }
+                    
+                    if let imageData = result.value(forKey: "image") as? Data {
+                        let image = UIImage(data: imageData)
+                        myImageview.image = image
+                    }
+                }
+            }
+        } catch {
+            print("error")
+        }
         
     }
     
