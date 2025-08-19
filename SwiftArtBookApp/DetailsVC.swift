@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreData
 
 class DetailsVC: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
@@ -62,6 +63,43 @@ class DetailsVC: UIViewController, UIImagePickerControllerDelegate, UINavigation
     
     
     @IBAction func saveButton(_ sender: Any) {
+        
+        
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let context = appDelegate.persistentContainer.viewContext
+        
+        let newPainting = NSEntityDescription.insertNewObject(forEntityName: "Painting", into: context)
+        
+        // Attributes
+        
+        newPainting.setValue(nameText.text, forKey: "name")
+        newPainting.setValue(artistText.text, forKey: "artist")
+        
+        if let year = Int(yearText.text!) {
+            newPainting.setValue(year, forKey: "year")
+        }
+        
+        newPainting.setValue(UUID(), forKey: "id")
+        
+        let imageData = myImageview.image?.jpegData(compressionQuality: 0.5)
+        
+        newPainting.setValue(imageData, forKey: "image")
+        
+        
+        // Kayıt işlemi
+        
+        do {
+            try context.save()
+            print("Kayıt Başarılı")
+        } catch {
+            print("Kayıt Başarısız")
+        }
+        
+        
+        
+        
+        
+        
     }
     
 
