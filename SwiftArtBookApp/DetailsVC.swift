@@ -15,6 +15,7 @@ class DetailsVC: UIViewController, UIImagePickerControllerDelegate, UINavigation
     @IBOutlet weak var nameText: UITextField!
     @IBOutlet weak var artistText: UITextField!
     @IBOutlet weak var yearText: UITextField!
+    @IBOutlet weak var saveButtonn: UIButton!
     
     var choosenPainting = ""
     var choosenPaintingId : UUID?
@@ -27,7 +28,17 @@ class DetailsVC: UIViewController, UIImagePickerControllerDelegate, UINavigation
         if choosenPainting != "" {
             // Core Data
             
+            // Veriler gösterilecek save butonunu kullanmayacağız, o yüzden saklıyoruz.
+            //saveButtonn.isEnabled = false
+            saveButtonn.isHidden = true
+            nameText.isEnabled = false
+            artistText.isEnabled = false
+            yearText.isEnabled = false
+            
             getDetailData()
+        } else {
+            saveButtonn.isHidden = false
+            saveButtonn.isEnabled = false
         }
   
         //-------Recognizer-------
@@ -60,9 +71,9 @@ class DetailsVC: UIViewController, UIImagePickerControllerDelegate, UINavigation
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         myImageview.image = info[.originalImage] as? UIImage
+        saveButtonn.isEnabled = true
         self.dismiss(animated: true, completion: nil)
     }
-    
     
     @objc func hideKeyboard() {
         view.endEditing(true)
@@ -70,7 +81,6 @@ class DetailsVC: UIViewController, UIImagePickerControllerDelegate, UINavigation
     
     
     @IBAction func saveButton(_ sender: Any) {
-        
         
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let context = appDelegate.persistentContainer.viewContext
@@ -112,7 +122,6 @@ class DetailsVC: UIViewController, UIImagePickerControllerDelegate, UINavigation
         
         NotificationCenter.default.post(name: NSNotification.Name("newData"), object: nil)
         self.navigationController?.popViewController(animated: true)
-        
         
     }
     
@@ -156,8 +165,5 @@ class DetailsVC: UIViewController, UIImagePickerControllerDelegate, UINavigation
         } catch {
             print("error")
         }
-        
     }
-    
-
 }
