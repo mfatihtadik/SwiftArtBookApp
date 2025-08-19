@@ -34,7 +34,12 @@ class DetailsVC: UIViewController, UIImagePickerControllerDelegate, UINavigation
     }
     
     @objc func selectImage() {
-        //picker işlemlerini yapabilmek için ->  UIImagePickerControllerDelegate ve UINavigationControllerDelegate sınıflarından miras alıyoruz...
+        // picker işlemlerini yapabilmek için ->  UIImagePickerControllerDelegate ve UINavigationControllerDelegate sınıflarından miras alıyoruz...
+        
+        // --------Kullanıcı izni---------
+        // Yeni versiyonlarda kullanıcı izni almak kaldırıldı...
+        // Eski versiyonlara ürün çıkartıyorsak onlar için zorunlu!..
+        // -> info dosyasından + ' ya tıkla, --> Privacy - Photo Library Usage Description <-- bunu seç ve neden kullanmak istediğinle ilgili açıklama ekle...
         
         let picker = UIImagePickerController()
         picker.delegate = self
